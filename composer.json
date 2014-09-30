@@ -1,0 +1,21 @@
+{
+    "name": "wormhit/city-downhill",
+    "type": "library",
+    "description": "Finds best downhill places in city between public transport stops",
+    "keywords": ["city", "public transport", "elevation", "downhill", "longboard"],
+    "license": "proprietary",
+    "require": {
+        "php": ">=5.5",
+        "google/apiclient": "1.0.*@dev",
+        "rmccue/requests": ">=1.0",
+        "pimple/pimple": "3.0.*@dev",
+        "keboola/csv": "dev-master",
+        "clue/graph": "0.7.*",
+        "anthonymartin/geo-location": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}
