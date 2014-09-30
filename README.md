@@ -2,12 +2,12 @@
 
 Finds best longboard rides in city by cross referencing public transport map and location elevation.
 
-Use case:
+## Use case:
 
 1.  Find route to drive using current tool
 2.  Buy public transport ticket
 3.  Drive to start location
-4.  Cruise down the road till station
+4.  Cruise down the road till next station
 5.  Drive up with transport
 6.  GOTO 4
 
@@ -33,6 +33,11 @@ Then install php, update dependencies and execute script approximately like so:
 ```
 apt-get install php5-cli
 php composer.phar update
+```
+
+## Run
+
+```
 php index.php | less
 ```
 
