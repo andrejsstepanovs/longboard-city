@@ -1,0 +1,4 @@
+etc/config.local.php
+data/gtfs/*
+vendor/*
+composer.lock
