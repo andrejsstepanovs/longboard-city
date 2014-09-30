@@ -3,12 +3,13 @@
 Finds best longboard rides in city by cross referencing public transport map and location elevation.
 
 Use case:
-1  Find route to drive using current tool
-2  Buy public transport ticket
-3  Drive to start location
-4  Cruise down the road till station
-5  Drive up with transport
-6  GOTO 4
+
+1.  Find route to drive using current tool
+2.  Buy public transport ticket
+3.  Drive to start location
+4.  Cruise down the road till station
+5.  Drive up with transport
+6.  GOTO 4
 
 ## Uses
 
@@ -17,15 +18,15 @@ Use case:
 
 ## Install
 
-1  Create account in google and then go to [Google Developers Console][4]
-2  Get [Google Elevation API][1] key.
-3  Download your city gtfs file from [Public Feeds][3]
-4  Uncompress and put it in data/gtfs/{YOUR_CITY_NAME}
-5  Create file etc/config.local.php # cp etc/config.php etc/config.local.php
-6  Edit newly created file and fill null values.
-  1  Add elevation api key.
-  2  In gtfs->city set your {YOUR_CITY_NAME}
-  3  Fill values under filter key.
+1.  Create account in google and then go to [Google Developers Console][4]
+2.  Get [Google Elevation API][1] key.
+3.  Download your city gtfs file from [Public Feeds][3]
+4.  Uncompress and put it in data/gtfs/{YOUR_CITY_NAME}
+5.  Create file etc/config.local.php # cp etc/config.php etc/config.local.php
+6.  Edit newly created file and fill null values.
+  1.  Add elevation api key.
+  2.  In gtfs->city set your {YOUR_CITY_NAME}
+  3.  Fill values under filter key.
 
 Then install php, update dependencies and execute script approximately like so:
 
