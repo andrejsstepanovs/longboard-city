@@ -32,9 +32,6 @@ class StopTimes
     /** @var int */
     private $lastTripId;
 
-    /** @var int */
-    private $lastIterator;
-
     /**
      * @param CsvFile $stopTimes
      */
@@ -48,8 +45,7 @@ class StopTimes
      */
     public function populateLinkedLocationIds(array &$locations)
     {
-        //$count = $this->getTripCount();
-        $count    = 204915;
+        $count    = $this->getTripCount();
         $batch    = round($count / 10);
         $tripData = [];
         $tripsProcessed = 0;

@@ -55,8 +55,8 @@ class Helper
         foreach ($chunks as $iterator => $chunk) {
             $data = $this->api->getLocationsElevationData($chunk);
 
-            foreach ($chunk as $i => $location) {
-                $responseData = $data[$i];
+            foreach ($chunk as $id => $location) {
+                $responseData = $data[$id];
                 $location->setElevation($responseData['elevation']);
 
                 $response[] = $location;
