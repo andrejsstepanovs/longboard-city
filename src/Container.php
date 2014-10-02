@@ -48,7 +48,9 @@ class Container extends Pimple
         };
 
         $this['distance'] = function ($self) {
-            return new \App\Distance();
+            $geoLocation = new \AnthonyMartin\GeoLocation\GeoLocation();
+
+            return new \App\Distance($geoLocation);
         };
 
         $this['order'] = function ($self) {

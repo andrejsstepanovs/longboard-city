@@ -2,8 +2,8 @@
 
 namespace App;
 
-use App\Location;
-use AnthonyMartin\GeoLocation\GeoLocation;
+use \App\Location;
+use \AnthonyMartin\GeoLocation\GeoLocation;
 
 /**
  * Class Distance
@@ -15,6 +15,17 @@ class Distance
     /** @var string */
     private $unitOfMeasurement = 'kilometers';
 
+    /** @var GeoLocation */
+    private $geoLocation;
+
+    /**
+     * @param GeoLocation $geoLocation
+     */
+    public function __construct(GeoLocation $geoLocation)
+    {
+        $this->geoLocation = $geoLocation;
+    }
+
     /**
      * @param Location $start
      * @param Location $stop
@@ -23,9 +34,13 @@ class Distance
      */
     public function getDistance(Location $start, Location $stop)
     {
-        $locationStart = GeoLocation::fromDegrees($start->getLatitude(), $start->getLongitude());
-        $locationStop  = GeoLocation::fromDegrees($stop->getLatitude(), $stop->getLongitude());
+        $locationStart = $this->geoLocation->fromDegrees($start->getLatitude(), $start->getLongitude());
+        $locationStop  = $this->geoLocation->fromDegrees($stop->getLatitude(), $stop->getLongitude());
 
-        return $locationStart->distanceTo($locationStop, $this->unitOfMeasurement);
+        $distance = $locationStart->distanceTo($locationStop, $this->unitOfMeasurement);
+
+        unset($locationStart, $locationStop);
+
+        return $distance;
     }
 }
