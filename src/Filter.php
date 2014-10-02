@@ -22,6 +22,9 @@ class Filter
     /** @var float */
     private $maxDistance;
 
+    /** @var float */
+    private $maxDistanceFromHome;
+
     /** @var Location */
     private $home;
 
@@ -30,6 +33,7 @@ class Filter
      * @param string   $filterCity
      * @param float    $minDistance
      * @param float    $maxDistance
+     * @param float    $maxDistanceFromHome
      * @param Location $home
      */
     public function __construct(
@@ -37,13 +41,15 @@ class Filter
         $filterCity,
         $minDistance,
         $maxDistance,
+        $maxDistanceFromHome,
         Location $home
     ) {
-        $this->distance    = $distance;
-        $this->filterCity  = $filterCity;
-        $this->minDistance = $minDistance;
-        $this->maxDistance = $maxDistance;
-        $this->home        = $home;
+        $this->distance            = $distance;
+        $this->filterCity          = $filterCity;
+        $this->minDistance         = $minDistance;
+        $this->maxDistance         = $maxDistance;
+        $this->home                = $home;
+        $this->maxDistanceFromHome = $maxDistanceFromHome;
     }
 
     /**
@@ -104,6 +110,42 @@ class Filter
                 }
 
                 if ($minDistance > 0 && $distance < $minDistance) {
+                    return false;
+                }
+
+                return true;
+            }
+        );
+
+        return $diffData;
+    }
+
+    /**
+     * @param Diff[]     $diffData
+     * @param Location[] $locations
+     *
+     * @return Diff[]
+     */
+    public function filterClosestToHome(array $diffData, array $locations)
+    {
+        if (empty($this->maxDistanceFromHome)) {
+            return $diffData;
+        }
+
+        $maxDistanceFromHome = $this->maxDistanceFromHome;
+        $home                = $this->home;
+
+        $diffData = array_filter(
+            $diffData,
+            function(Diff $diff) use($maxDistanceFromHome, $home, $locations) {
+                $diff->setUp($locations);
+                $distance = min(
+                    $this->distance->getDistance($home, $diff->getStartLocation()),
+                    $this->distance->getDistance($home, $diff->getStopLocation())
+                );
+                $diff->free();
+
+                if ($distance > $maxDistanceFromHome) {
                     return false;
                 }
 
