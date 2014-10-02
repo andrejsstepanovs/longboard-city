@@ -123,11 +123,19 @@ class App
     private function findBestMatch(array $diffData, array $locations)
     {
         $locations = $this->helper->populateLocationIds($locations);
-        $diffData  = $this->filter->filterDistance($diffData);
 
+        echo 'Filter closest to home' . PHP_EOL;
+        $diffData = $this->filter->filterClosestToHome($diffData, $locations);
+
+        echo 'Order closest to home' . PHP_EOL;
         $diffData = $this->order->orderClosestToHome($diffData, $locations);
         $diffData = $this->filter->limitDiff($diffData, $this->limit);
 
+        echo 'Filter by distance' . PHP_EOL;
+        $diffData  = $this->filter->filterDistance($diffData);
+        $diffData = $this->filter->limitDiff($diffData, $this->limit);
+
+        echo 'Order by angle' . PHP_EOL;
         $diffData = $this->order->orderByAngle($diffData, $locations);
         $diffData = $this->filter->limitDiff($diffData, $this->limit);
 

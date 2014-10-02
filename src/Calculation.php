@@ -55,11 +55,15 @@ class Calculation
     /**
      * @param Vertex $startVertex
      * @param array  $locations
+     * @param Vertex $parentVertex
+     * @param int    $level
      */
-    private function iterateVertex(Vertex $startVertex, array $locations)
+    private function iterateVertex(Vertex $startVertex, array $locations, Vertex $parentVertex = null, $level = 1)
     {
-        $firstLocationId = $startVertex->getId();
-        $location        = $locations[$firstLocationId];
+        $parentVertex    = $parentVertex ? $parentVertex : $startVertex;
+        $firstLocationId = $parentVertex->getId();
+        $startLocation   = $locations[$parentVertex->getId()];
+        $level++;
 
         /** @var \Fhaculty\Graph\Edge\Directed $directed */
         foreach ($startVertex->getEdgesOut() as $directed) {
@@ -73,8 +77,12 @@ class Calculation
             $currentLocation = $locations[$locationId];
 
             $key      = $this->getKey($firstLocationId, $locationId);
-            $distance = $this->distance->getDistance($location, $currentLocation);
+            $distance = $this->distance->getDistance($startLocation, $currentLocation);
             $this->data[$key] = new Diff($firstLocationId, $locationId, $distance);
+
+            if ($level <= $this->stops) {
+                $this->iterateVertex($stopVertex, $locations, $parentVertex, $level);
+            }
         }
     }
 
