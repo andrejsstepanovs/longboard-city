@@ -18,12 +18,20 @@ class Calculation
     /** @var Distance */
     private $distance;
 
+    /** @var int */
+    private $stops;
+
+    /** @var Diff[] */
+    private $data = [];
+
     /**
      * @param Distance $distance
+     * @param int      $stops
      */
-    public function __construct(Distance $distance)
+    public function __construct(Distance $distance, $stops)
     {
         $this->distance = $distance;
+        $this->stops    = $stops;
     }
 
     /**
@@ -34,28 +42,40 @@ class Calculation
      */
     public function getDiffData(array $locations, Graph $graph)
     {
-        $data = [];
-
         foreach ($locations as $location) {
             $firstLocationId = $location->getId();
-            /** @var \Fhaculty\Graph\Edge\Directed $directed */
-            foreach ($graph->getVertex($firstLocationId)->getEdgesOut() as $directed) {
-                $vertex     = $directed->getVertexEnd();
-                $locationId = $vertex->getId();
-                if (!array_key_exists($locationId, $locations)) {
-                    continue;
-                }
+            $vertex = $graph->getVertex($firstLocationId);
 
-                /** @var Location $currentLocation */
-                $currentLocation = $locations[$locationId];
-
-                $key        = $this->getKey($firstLocationId, $locationId);
-                $distance   = $this->distance->getDistance($location, $currentLocation);
-                $data[$key] = new Diff($firstLocationId, $locationId, $distance);
-            }
+            $this->iterateVertex($vertex, $locations);
         }
 
-        return $data;
+        return $this->data;
+    }
+
+    /**
+     * @param Vertex $startVertex
+     * @param array  $locations
+     */
+    private function iterateVertex(Vertex $startVertex, array $locations)
+    {
+        $firstLocationId = $startVertex->getId();
+        $location        = $locations[$firstLocationId];
+
+        /** @var \Fhaculty\Graph\Edge\Directed $directed */
+        foreach ($startVertex->getEdgesOut() as $directed) {
+            $stopVertex = $directed->getVertexEnd();
+            $locationId = $stopVertex->getId();
+            if (!array_key_exists($locationId, $locations)) {
+                continue;
+            }
+
+            /** @var Location $currentLocation */
+            $currentLocation = $locations[$locationId];
+
+            $key      = $this->getKey($firstLocationId, $locationId);
+            $distance = $this->distance->getDistance($location, $currentLocation);
+            $this->data[$key] = new Diff($firstLocationId, $locationId, $distance);
+        }
     }
 
     /**

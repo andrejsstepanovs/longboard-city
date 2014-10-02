@@ -80,8 +80,9 @@ class Container extends Pimple
 
             /** @var Distance $distance */
             $distance = $self['distance'];
+            $stops    = $self['config']['filter']['stops'];
 
-            return new \App\Calculation($distance);
+            return new \App\Calculation($distance, $stops);
         };
 
         $this['stops'] = function ($self) {

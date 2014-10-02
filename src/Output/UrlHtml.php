@@ -27,10 +27,12 @@ class UrlHtml extends Url
     {
         $data = $this->getOutputData($diffData);
 
-        $name = '(' . $data[self::KEY_ANGLE] . ')';
-        $name .= ' ' . $data[self::KEY_NAME] . ' ';
-        $name .= '(' . $data[self::KEY_DISTANCE] . ')';
+        $name = [];
+        $name[] = '(' . $data[self::KEY_ELEVATION] . ')';
+        $name[] = '(' . $data[self::KEY_ANGLE] . ')';
+        $name[] = $data[self::KEY_NAME];
+        $name[] = '(' . $data[self::KEY_DISTANCE] . ')';
 
-        return '<a href="' . $data[self::KEY_URL] . '" >' . $name . '</a>';
+        return '<a href="' . $data[self::KEY_URL] . '" >' . implode(' ', $name) . '</a>';
     }
 }

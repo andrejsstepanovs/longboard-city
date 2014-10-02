@@ -27,6 +27,7 @@ class Helper
     /**
      * @param Api $api
      * @param int $locationsInRequest
+     * @param int $allowedRequestsPerSecond
      */
     public function __construct(Api $api, $locationsInRequest, $allowedRequestsPerSecond)
     {

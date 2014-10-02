@@ -12,10 +12,11 @@ use \App\Diff;
  */
 class Url extends OutputAbstract implements OutputInterface
 {
-    const KEY_DISTANCE = 'distance';
-    const KEY_ANGLE    = 'angle';
-    const KEY_NAME     = 'name';
-    const KEY_URL      = 'url';
+    const KEY_DISTANCE  = 'distance';
+    const KEY_ELEVATION = 'elevation';
+    const KEY_ANGLE     = 'angle';
+    const KEY_NAME      = 'name';
+    const KEY_URL       = 'url';
 
     /** @var string */
     private $url = "https://www.google.de/maps/dir/'%s,%s'/'%s,%s'";
@@ -54,10 +55,11 @@ class Url extends OutputAbstract implements OutputInterface
     protected function getOutputData(Diff $diffData)
     {
         return [
-            self::KEY_DISTANCE => $this->getDistance($diffData),
-            self::KEY_ANGLE    => $this->getAngle($diffData),
-            self::KEY_NAME     => $diffData->getName(),
-            self::KEY_URL      => $this->getUrl($diffData)
+            self::KEY_DISTANCE  => $this->getDistance($diffData),
+            self::KEY_ELEVATION => $diffData->getElevation(),
+            self::KEY_ANGLE     => $this->getAngle($diffData),
+            self::KEY_NAME      => $diffData->getName(),
+            self::KEY_URL       => $this->getUrl($diffData)
         ];
     }
 
