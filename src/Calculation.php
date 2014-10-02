@@ -7,6 +7,7 @@ use \App\Diff;
 use \Fhaculty\Graph\Graph;
 use \Fhaculty\Graph\Vertex;
 
+
 /**
  * Class Calculation
  *
@@ -14,10 +15,6 @@ use \Fhaculty\Graph\Vertex;
  */
 class Calculation
 {
-    const START = 'from';
-    const STOP  = 'to';
-    const DIFF  = 'diff';
-
     /** @var Distance */
     private $distance;
 
@@ -40,9 +37,10 @@ class Calculation
         $data = [];
 
         foreach ($locations as $location) {
-            /** @var Vertex $vertex */
-            foreach ($graph->getVertex($location->getId())->getVerticesEdgeFrom() as $vertex) {
-
+            $firstLocationId = $location->getId();
+            /** @var \Fhaculty\Graph\Edge\Directed $directed */
+            foreach ($graph->getVertex($firstLocationId)->getEdgesOut() as $directed) {
+                $vertex     = $directed->getVertexEnd();
                 $locationId = $vertex->getId();
                 if (!array_key_exists($locationId, $locations)) {
                     continue;
@@ -51,11 +49,23 @@ class Calculation
                 /** @var Location $currentLocation */
                 $currentLocation = $locations[$locationId];
 
-                $distance = $this->distance->getDistance($location, $currentLocation);
-                $data[]   = new Diff($location, $currentLocation, $distance);
+                $key        = $this->getKey($firstLocationId, $locationId);
+                $distance   = $this->distance->getDistance($location, $currentLocation);
+                $data[$key] = new Diff($location, $currentLocation, $distance);
             }
         }
 
         return $data;
+    }
+
+    /**
+     * @param int $startLocationId
+     * @param int $stopLocationId
+     *
+     * @return string
+     */
+    private function getKey($startLocationId, $stopLocationId)
+    {
+        return min($startLocationId, $stopLocationId) . '|' . max($startLocationId, $stopLocationId);
     }
 }
