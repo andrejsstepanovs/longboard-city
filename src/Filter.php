@@ -39,11 +39,11 @@ class Filter
         $maxDistance,
         Location $home
     ) {
-        $this->distance           = $distance;
-        $this->filterCity         = $filterCity;
-        $this->minDistance        = $minDistance;
-        $this->maxDistance        = $maxDistance;
-        $this->home               = $home;
+        $this->distance    = $distance;
+        $this->filterCity  = $filterCity;
+        $this->minDistance = $minDistance;
+        $this->maxDistance = $maxDistance;
+        $this->home        = $home;
     }
 
     /**

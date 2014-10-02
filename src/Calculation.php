@@ -51,7 +51,7 @@ class Calculation
 
                 $key        = $this->getKey($firstLocationId, $locationId);
                 $distance   = $this->distance->getDistance($location, $currentLocation);
-                $data[$key] = new Diff($location, $currentLocation, $distance);
+                $data[$key] = new Diff($firstLocationId, $locationId, $distance);
             }
         }
 

@@ -20,6 +20,13 @@ interface OutputInterface
     public function setDiffData(array $diffData);
 
     /**
+     * @param \App\Location $locations
+     *
+     * @return \App\Diff
+     */
+    public function setLocations(array $locations);
+
+    /**
      * @return string
      */
     public function __toString();

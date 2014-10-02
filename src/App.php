@@ -115,33 +115,37 @@ class App
     }
 
     /**
-     * @param Diff[] $diffData
+     * @param Diff[]     $diffData
+     * @param Location[] $locations
      *
      * @return Diff[]
      */
-    private function findBestMatch(array $diffData)
+    private function findBestMatch(array $diffData, array $locations)
     {
-        $diffData = $this->filter->filterDistance($diffData);
+        $locations = $this->helper->populateLocationIds($locations);
+        $diffData  = $this->filter->filterDistance($diffData);
 
-        $diffData = $this->order->orderClosestToHome($diffData);
+        $diffData = $this->order->orderClosestToHome($diffData, $locations);
         $diffData = $this->filter->limitDiff($diffData, $this->limit);
 
-        $diffData = $this->order->orderByAngle($diffData);
+        $diffData = $this->order->orderByAngle($diffData, $locations);
         $diffData = $this->filter->limitDiff($diffData, $this->limit);
 
         return $diffData;
     }
 
     /**
-     * @param Diff[] $diffData
-     * @param string $type
+     * @param Diff[]     $diffData
+     * @param Location[] $locations
+     * @param string     $type
      *
      * @return string
      */
-    private function getOutput(array $diffData, $type)
+    private function getOutput(array $diffData, array $locations, $type)
     {
         $output = $this->output->getOutput($type);
         $output->setDiffData($diffData);
+        $output->setLocations($locations);
 
         return $output->__toString();
     }
@@ -152,8 +156,9 @@ class App
 
         $diffData = $this->getDiff($locations);
 
-        $diffData = $this->findBestMatch($diffData);
+        $diffData = $this->findBestMatch($diffData, $locations);
 
-        return $this->getOutput($diffData, Factory::URL);
+        $locations = $this->helper->populateLocationIds($locations);
+        return $this->getOutput($diffData, $locations, Factory::URL_HTML);
     }
 }

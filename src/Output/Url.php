@@ -27,8 +27,10 @@ class Url extends OutputAbstract implements OutputInterface
     {
         $return = [];
 
-        foreach ($this->getDiffData() as $elevationDiff) {
-            $return[] = $this->getOutputString($elevationDiff);
+        foreach ($this->getDiffData() as $diffData) {
+            $diffData->setUp($this->getLocations());
+            $return[] = $this->getOutputString($diffData);
+            $diffData->free();
         }
 
         return implode(PHP_EOL, $return);

@@ -2,6 +2,9 @@
 
 namespace App;
 
+use \App\Location;
+
+
 /**
  * Class Order
  *
@@ -26,11 +29,12 @@ class Order
     }
 
     /**
-     * @param array $diffData
+     * @param Diff[]     $diffData
+     * @param Location[] $locations
      *
-     * @return array
+     * @return Diff[]
      */
-    public function orderClosestToHome(array $diffData)
+    public function orderClosestToHome(array $diffData, array $locations)
     {
         if (!$this->home) {
             return $diffData;
@@ -41,7 +45,10 @@ class Order
 
         usort(
             $diffData,
-            function (Diff $diffA, Diff $diffB) use ($home, $distance) {
+            function (Diff $diffA, Diff $diffB) use ($home, $distance, $locations) {
+                $diffA->setUp($locations);
+                $diffB->setUp($locations);
+
                 $distanceA = min(
                     $this->distance->getDistance($home, $diffA->getStartLocation()),
                     $this->distance->getDistance($home, $diffA->getStopLocation())
@@ -51,6 +58,9 @@ class Order
                     $this->distance->getDistance($home, $diffB->getStopLocation())
                 );
 
+                $diffA->free();
+                $diffB->free();
+
                 return $distanceA < $distanceB ? -1 : 1;
             }
         );
@@ -59,17 +69,24 @@ class Order
     }
 
     /**
-     * @param array $diffData
+     * @param array      $diffData
+     * @param Location[] $locations
      *
      * @return array
      */
-    public function orderByAngle(array $diffData)
+    public function orderByAngle(array $diffData, array $locations)
     {
         usort(
             $diffData,
-            function (Diff $diffA, Diff $diffB) {
+            function (Diff $diffA, Diff $diffB) use ($locations) {
+                $diffA->setUp($locations);
+                $diffB->setUp($locations);
+
                 $angleA = $diffA->getAngle();
                 $angleB = $diffB->getAngle();
+
+                $diffA->free();
+                $diffB->free();
 
                 return $angleA > $angleB ? -1 : 1;
             }

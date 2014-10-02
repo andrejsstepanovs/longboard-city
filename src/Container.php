@@ -62,10 +62,10 @@ class Container extends Pimple
         };
 
         $this['filter'] = function ($self) {
-            $config             = $self['config']['filter'];
-            $city               = $config['city'];
-            $minDistance        = $config['min-distance'];
-            $maxDistance        = $config['max-distance'];
+            $config      = $self['config']['filter'];
+            $filterCity  = empty($config['city']) ? null : $config['city'];
+            $minDistance = $config['min-distance'];
+            $maxDistance = $config['max-distance'];
 
             /** @var \App\Location $home */
             $home = $self['home'];
@@ -73,7 +73,7 @@ class Container extends Pimple
             /** @var \App\Distance $url */
             $distance = $self['distance'];
 
-            return new \App\Filter($distance, $city, $minDistance, $maxDistance, $home);
+            return new \App\Filter($distance, $filterCity, $minDistance, $maxDistance, $home);
         };
 
         $this['calculation'] = function ($self) {
