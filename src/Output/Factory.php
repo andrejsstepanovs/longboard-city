@@ -10,16 +10,19 @@ namespace App\Output;
 class Factory
 {
     const URL = 'url';
+    const URL_HTML = 'url_html';
 
     /** @var array */
     private $class = [];
 
     /**
-     * @param Url $url
+     * @param Url     $url
+     * @param UrlHtml $urlHtml
      */
-    public function __construct(Url $url)
+    public function __construct(Url $url, UrlHtml $urlHtml)
     {
-        $this->class[self::URL] = $url;
+        $this->class[self::URL]      = $url;
+        $this->class[self::URL_HTML] = $urlHtml;
     }
 
     /**

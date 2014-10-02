@@ -33,10 +33,10 @@ class Diff
         $this->stopLocation  = $stopLocation;
         $this->distance      = $distance;
         $elevation           = $this->calculateElevation();
+        $this->reorderLocations($elevation);
+
         $this->elevation     = abs($elevation);
         $this->angle         = $this->calculateAngle();
-
-        $this->reorderLocations($elevation);
     }
 
     /**
@@ -44,7 +44,7 @@ class Diff
      */
     private function reorderLocations($elevation)
     {
-        if ($elevation > 0) {
+        if ($elevation < 0) {
             $stopLocation        = $this->stopLocation;
             $this->stopLocation  = $this->startLocation;
             $this->startLocation = $stopLocation;
@@ -64,14 +64,15 @@ class Diff
      */
     private function calculateAngle()
     {
-        $height   = $this->getElevation();
-        $distance = $this->getDistance();
+        $height   = $this->getElevation(); // km
+        $distance = $this->getDistance();  // m
+        $distance *= 1000;                 // km
 
-        if ($height == 0) {
+        if ($distance == 0) {
             return 0;
         }
 
-        return atan($distance / $height) * 180 / pi();
+        return atan($height / $distance) * 180 / pi();
     }
 
     /**

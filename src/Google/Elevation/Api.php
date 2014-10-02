@@ -2,8 +2,9 @@
 
 namespace App\Google\Elevation;
 
-use App\Location;
+use \App\Location;
 use \Requests;
+
 
 /**
  * Class Api
@@ -39,10 +40,10 @@ class Api
         $data = [];
         foreach ($results as $result) {
             $data[] = [
-                'elevation'  => $result->elevation,
+                'elevation'  => $result->elevation, // meters
                 'resolution' => $result->resolution,
                 'latitude'   => $result->location->lat,
-                'longitude'  => $result->location->lng,
+                'longitude'  => $result->location->lng
             ];
         }
 

@@ -102,8 +102,9 @@ class Container extends Pimple
 
         $this['output'] = function ($self) {
             $url = new \App\Output\Url();
+            $urlHtml = new \App\Output\UrlHtml();
 
-            return new \App\Output\Factory($url);
+            return new \App\Output\Factory($url, $urlHtml);
         };
 
         $this['transfers'] = function ($self) {

@@ -78,12 +78,14 @@ class App
     {
         echo 'Get locations' . PHP_EOL;
         $locations = $this->stops->getLocations();
-        $locations = $this->helper->populateLocationIds($locations);
+
         echo 'Populate Linked Location Ids from Transfers' . PHP_EOL;
         $this->transfers->populateLinkedLocationIds($locations);
+
         echo 'Populate Linked Location Ids from Stop Times' . PHP_EOL;
-        $this->stopTimes->populateLinkedLocationIds($locations);
         $locations = $this->helper->populateLocationIds($locations);
+        $this->stopTimes->populateLinkedLocationIds($locations);
+
         echo 'Populate Location Elevation' . PHP_EOL;
         $locations = $this->helper->populateLocationsElevation($locations);
 
@@ -99,10 +101,13 @@ class App
     {
         echo 'Populate Location Ids' . PHP_EOL;
         $locations = $this->helper->populateLocationIds($locations);
+
         echo 'Filter City' . PHP_EOL;
         $locations = $this->filter->filterCity($locations);
+
         echo 'Generate Graph' . PHP_EOL;
         $graph = $this->helper->getGraph($locations);
+
         echo 'Calculate Diff Data' . PHP_EOL;
         $diffData = $this->calculation->getDiffData($locations, $graph);
 

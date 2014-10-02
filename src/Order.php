@@ -26,26 +26,6 @@ class Order
     }
 
     /**
-     * @param array $elevationDiff
-     *
-     * @return \App\Location
-     */
-    private function getDiffStartLocation(array $elevationDiff)
-    {
-        return $elevationDiff[Calculation::START];
-    }
-
-    /**
-     * @param array $elevationDiff
-     *
-     * @return \App\Location
-     */
-    private function getDiffStopLocation(array $elevationDiff)
-    {
-        return $elevationDiff[Calculation::STOP];
-    }
-
-    /**
      * @param array $diffData
      *
      * @return array
@@ -91,7 +71,7 @@ class Order
                 $angleA = $diffA->getAngle();
                 $angleB = $diffB->getAngle();
 
-                return $angleA < $angleB ? -1 : 1;
+                return $angleA > $angleB ? -1 : 1;
             }
         );
 
