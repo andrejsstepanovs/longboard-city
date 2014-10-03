@@ -21,7 +21,20 @@ class Container extends Pimple
         $this->initCalculation();
         $this->initHelper();
         $this->initFilterOrder();
+        $this->initDb();
         $this->initApp();
+    }
+
+    private function initDb()
+    {
+        $this['db'] = function ($self) {
+            $config = $self['config']['db'];
+            return new \App\Db\Db($config['path'], $config['file']);
+        };
+
+        $this['db-location'] = function ($self) {
+            return new \App\Db\Table\Location($self['db']);
+        };
     }
 
     private function initApp()
@@ -54,6 +67,9 @@ class Container extends Pimple
             /** @var int $limit */
             $limit = $self['config']['filter']['limit'];
 
+            /** @var \App\Db\Table\Location $locationDb */
+            $locationDb = $self['db-location'];
+
             return new \App\App(
                 $stops,
                 $stopTimes,
@@ -63,6 +79,7 @@ class Container extends Pimple
                 $output,
                 $filter,
                 $order,
+                $locationDb,
                 $limit
             );
         };

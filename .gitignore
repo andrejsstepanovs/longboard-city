@@ -1,4 +1,5 @@
 etc/config.local.php
 data/gtfs/*
+data/db/*
 vendor/*
 composer.lock

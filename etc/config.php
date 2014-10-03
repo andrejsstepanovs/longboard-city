@@ -13,6 +13,7 @@ return [
     ],
     'db' => [
         'path' => __DIR__ . '/../data/db/',
+        'file' => 'db.sqlite',
     ],
     'filter' => [
         'home' => [

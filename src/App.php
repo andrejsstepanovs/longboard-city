@@ -7,6 +7,7 @@ use App\Gtfs\StopTimes;
 use App\Gtfs\Transfers;
 use App\Helper;
 use App\Output\Factory;
+use App\Db\Table\Location as LocationDb;
 
 /**
  * Class App
@@ -39,6 +40,9 @@ class App
     /** @var int */
     private $limit;
 
+    /** @var LocationDb */
+    private $locationDb;
+
     /**
      * @param Stops       $stops
      * @param StopTimes   $stopTimes
@@ -47,6 +51,7 @@ class App
      * @param Helper      $helper
      * @param Factory     $output
      * @param Order       $order
+     * @param LocationDb  $locationDb
      * @param int         $limit
      */
     public function __construct(
@@ -58,6 +63,7 @@ class App
         Factory $output,
         Filter $filter,
         Order $order,
+        LocationDb $locationDb,
         $limit
     ) {
         $this->stops       = $stops;
@@ -69,6 +75,7 @@ class App
         $this->filter      = $filter;
         $this->order       = $order;
         $this->limit       = $limit;
+        $this->locationDb  = $locationDb;
     }
 
     /**
