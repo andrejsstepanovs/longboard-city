@@ -2,7 +2,7 @@
 
 namespace App\Output;
 
-use \App\Diff;
+use \App\Entity\Diff;
 
 
 /**

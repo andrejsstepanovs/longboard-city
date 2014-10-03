@@ -1,11 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Entity;
 
 /**
  * Class Location
  *
- * @package App
+ * @package App\Entity
  */
 class Location
 {
@@ -32,13 +32,15 @@ class Location
      * @param float  $longitude
      * @param int    $id
      * @param string $name
+     * @param float  $elevation
      */
-    public function __construct($latitude, $longitude, $id, $name = null)
+    public function __construct($latitude, $longitude, $id, $name = null, $elevation = null)
     {
         $this->latitude  = $latitude;
         $this->longitude = $longitude;
         $this->id        = $id;
         $this->name      = $name;
+        $this->elevation = $elevation;
     }
 
     /**

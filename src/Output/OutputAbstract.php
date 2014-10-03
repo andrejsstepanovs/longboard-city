@@ -2,6 +2,8 @@
 
 namespace App\Output;
 
+use \App\Entity\Diff;
+
 
 /**
  * Class OutputAbstract
@@ -10,30 +12,11 @@ namespace App\Output;
  */
 class OutputAbstract
 {
-    /** @var \App\Diff[] */
+    /** @var Diff[] */
     private $diffData;
 
-    /** @var \App\Location[] */
-    private $locations;
-
     /**
-     * @param \App\Location[] $locations
-     */
-    public function setLocations(array $locations)
-    {
-        $this->locations = $locations;
-    }
-
-    /**
-     * @return \App\Location[]
-     */
-    protected function getLocations()
-    {
-        return $this->locations;
-    }
-
-    /**
-     * @param \App\Diff[] $diffData
+     * @param Diff[] $diffData
      */
     public function setDiffData(array $diffData)
     {
@@ -41,7 +24,7 @@ class OutputAbstract
     }
 
     /**
-     * @return \App\Diff[]
+     * @return Diff[]
      */
     protected function getDiffData()
     {

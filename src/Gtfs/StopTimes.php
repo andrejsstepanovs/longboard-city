@@ -3,7 +3,8 @@
 namespace App\Gtfs;
 
 use \Keboola\Csv\CsvFile;
-use \App\Location;
+use \App\Entity\Location;
+
 
 /**
  * Class StopTimes
@@ -79,8 +80,8 @@ class StopTimes
     }
 
     /**
-     * @param \App\Location[] $locations
-     * @param array           $tripData
+     * @param Location[] $locations
+     * @param array      $tripData
      */
     public function addLinkedLocations(array &$locations, array $tripData)
     {

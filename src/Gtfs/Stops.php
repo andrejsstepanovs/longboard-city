@@ -3,7 +3,7 @@
 namespace App\Gtfs;
 
 use \Keboola\Csv\CsvFile;
-use \App\Location;
+use \App\Entity\Location;
 
 /**
  * Class Stops

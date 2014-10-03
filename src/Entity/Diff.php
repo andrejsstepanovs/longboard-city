@@ -1,20 +1,15 @@
 <?php
 
-namespace App;
+namespace App\Entity;
+
 
 /**
  * Class Diff
  *
- * @package App
+ * @package App\Entity
  */
 class Diff
 {
-    /** @var int */
-    private $startLocationId;
-
-    /** @var int */
-    private $stopLocationId;
-
     /** @var Location */
     private $startLocation;
 
@@ -30,46 +25,47 @@ class Diff
     /** @var float */
     private $angle;
 
+    /** @var int */
+    private $stops;
+
     /**
-     * @param int   $startLocationId
-     * @param int   $stopLocationId
-     * @param float $distance
-     * @param float $elevation
+     * @param Location $startLocation
+     * @param Location $stopLocation
+     * @param float    $distance
+     * @param int      $stops
+     * @param float    $angle
+     * @param float    $elevation
      */
-    public function __construct($startLocationId, $stopLocationId, $distance)
-    {
-        $this->startLocationId = $startLocationId;
-        $this->stopLocationId  = $stopLocationId;
-        $this->distance        = $distance;
+    public function __construct(
+        Location $startLocation,
+        Location $stopLocation,
+        $distance,
+        $stops,
+        $angle = null,
+        $elevation = null
+    ) {
+        $this->startLocation = $startLocation;
+        $this->stopLocation  = $stopLocation;
+        $this->distance      = $distance;
+        $this->stops         = $stops;
+        $this->angle         = $angle;
+        $this->elevation     = $elevation;
+
+        $this->setUp();
     }
 
-    /**
-     * Set up location objects variables and calculate other parameters.
-     * This is making current class heavier. To free this data call ::free()
-     *
-     * @param Location[] $locations
-     */
-    public function setUp(array $locations)
+    private function setUp()
     {
-        $this->startLocation = $locations[$this->startLocationId];
-        $this->stopLocation  = $locations[$this->stopLocationId];
-
         $elevation = $this->calculateElevation();
         $this->reorderLocations($elevation);
 
-        $this->elevation  = abs($elevation);
-        $this->angle      = $this->calculateAngle();
-    }
+        if ($this->elevation === null) {
+            $this->elevation = abs($elevation);
+        }
 
-    /**
-     * Free up unnecessary variables so class is not so heavy in memory
-     */
-    public function free()
-    {
-        $this->startLocation = null;
-        $this->stopLocation  = null;
-        $this->elevation     = null;
-        $this->angle         = null;
+        if ($this->angle === null) {
+            $this->angle = $this->calculateAngle();
+        }
     }
 
     /**
@@ -82,6 +78,14 @@ class Diff
             $this->stopLocation  = $this->startLocation;
             $this->startLocation = $stopLocation;
         }
+    }
+
+    /**
+     * @return int
+     */
+    public function getStops()
+    {
+        return $this->stops;
     }
 
     /**
@@ -154,17 +158,5 @@ class Diff
     public function getName()
     {
         return $this->getStartLocation()->getName() . ' => ' . $this->getStopLocation()->getName();
-    }
-
-    /**
-     * @return array
-     */
-    public function __sleep()
-    {
-        return [
-            'startLocationId',
-            'stopLocationId',
-            'distance'
-        ];
     }
 }

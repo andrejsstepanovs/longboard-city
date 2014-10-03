@@ -4,6 +4,7 @@ namespace App;
 
 use \Pimple\Container as Pimple;
 
+
 /**
  * Class Container
  *
@@ -20,7 +21,6 @@ class Container extends Pimple
 
         $this->initCalculation();
         $this->initHelper();
-        $this->initFilterOrder();
         $this->initDb();
         $this->initApp();
     }
@@ -34,6 +34,10 @@ class Container extends Pimple
 
         $this['db-location'] = function ($self) {
             return new \App\Db\Table\Location($self['db']);
+        };
+
+        $this['db-links'] = function ($self) {
+            return new \App\Db\Table\Links($self['db']);
         };
     }
 
@@ -49,26 +53,20 @@ class Container extends Pimple
             /** @var \App\Gtfs\Transfers $stops */
             $transfers = $self['transfers'];
 
-            /** @var \App\Helper $helper */
+            /** @var \App\Helper\Helper $helper */
             $helper = $self['helper'];
 
-            /** @var \App\Calculation $calculation */
+            /** @var \App\Helper\Calculation $calculation */
             $calculation = $self['calculation'];
 
             /** @var \App\Output\Factory $output */
             $output = $self['output'];
 
-            /** @var \App\Filter $filter */
-            $filter = $self['filter'];
-
-            /** @var \App\Order $order */
-            $order = $self['order'];
-
-            /** @var int $limit */
-            $limit = $self['config']['filter']['limit'];
-
             /** @var \App\Db\Table\Location $locationDb */
             $locationDb = $self['db-location'];
+
+            /** @var \App\Db\Table\Links $linksDb */
+            $linksDb = $self['db-links'];
 
             return new \App\App(
                 $stops,
@@ -77,23 +75,57 @@ class Container extends Pimple
                 $calculation,
                 $helper,
                 $output,
-                $filter,
-                $order,
                 $locationDb,
-                $limit
+                $linksDb
             );
         };
     }
 
     private function initCalculation()
     {
-        $this['calculation'] = function ($self) {
+        $this['home'] = function ($self) {
+            $config = $self['config']['filter'];
+            $home = empty($config['home']) ? false : $config['home'];
+            if ($home) {
+                return new \App\Entity\Location($home['latitude'], $home['longitude'], 0, 'Home');
+            }
+            return null;
+        };
 
-            /** @var Distance $distance */
+        $this['calculation'] = function ($self) {
+            /** @var \App\Helper\Distance $distance */
             $distance = $self['distance'];
             $stops    = $self['config']['filter']['stops'];
 
-            return new \App\Calculation($distance, $stops);
+            $config = $self['config']['filter'];
+            $home   = $self['home'];
+
+            /** @var \App\Db\Table\Location $locationTable */
+            $locationTable = $self['db-location'];
+
+            /** @var \App\Db\Table\Links $linksTable */
+            $linksTable = $self['db-links'];
+
+            $filterCity          = empty($config['city']) ? null : $config['city'];
+            $minDistance         = $config['min-distance'];
+            $maxDistance         = $config['max-distance'];
+            $maxDistanceFromHome = $config['max-distance-from-home'];
+
+            /** @var int $limit */
+            $limit = $self['config']['filter']['limit'];
+
+            return new \App\Helper\Calculation(
+                $limit,
+                $distance,
+                $stops,
+                $home,
+                $maxDistanceFromHome,
+                $locationTable,
+                $linksTable,
+                $filterCity,
+                $minDistance,
+                $maxDistance
+            );
         };
 
         $this['stops'] = function ($self) {
@@ -135,63 +167,33 @@ class Container extends Pimple
             $key = $googleApi['key'];
             $url = $googleApi['url'];
 
-            return new \App\Google\Elevation\Api($key, $url);
+            return new \App\Api\Elevation($key, $url);
         };
 
         $this['helper'] = function ($self) {
-            /** @var \App\Google\Elevation\Api $api */
+            /** @var \App\Api\Elevation $api */
             $api = $self['api'];
 
             $config = $self['config']['google-api'];
             $locationsInRequest       = $config['locations-in-request'];
             $allowedRequestsPerSecond = $config['allowed-requests-per-second'];
 
-            return new \App\Helper($api, $locationsInRequest, $allowedRequestsPerSecond);
+            /** @var \App\Db\Table\Location $locationDb */
+            $locationDb = $self['db-location'];
+
+            /** @var \App\Db\Table\Links $linksDb */
+            $linksDb = $self['db-links'];
+
+            /** @var \App\Helper\Distance $url */
+            $distance = $self['distance'];
+
+            return new \App\Helper\Helper($api, $distance, $locationDb, $linksDb, $locationsInRequest, $allowedRequestsPerSecond);
         };
 
         $this['distance'] = function ($self) {
             $geoLocation = new \AnthonyMartin\GeoLocation\GeoLocation();
 
-            return new \App\Distance($geoLocation);
-        };
-    }
-
-    private function initFilterOrder()
-    {
-        $this['home'] = function ($self) {
-            $config = $self['config']['filter'];
-            $home = empty($config['home']) ? false : $config['home'];
-            if ($home) {
-                return new \App\Location($home['latitude'], $home['longitude'], 0, 'Home');
-            }
-
-            return null;
-        };
-
-        $this['order'] = function ($self) {
-            /** @var \App\Location $home */
-            $home = $self['home'];
-
-            /** @var \App\Distance $url */
-            $distance = $self['distance'];
-
-            return new \App\Order($home, $distance);
-        };
-
-        $this['filter'] = function ($self) {
-            $config      = $self['config']['filter'];
-            $filterCity  = empty($config['city']) ? null : $config['city'];
-            $minDistance = $config['min-distance'];
-            $maxDistance = $config['max-distance'];
-            $maxDistanceFromHome = $config['max-distance-from-home'];
-
-            /** @var \App\Location $home */
-            $home = $self['home'];
-
-            /** @var \App\Distance $url */
-            $distance = $self['distance'];
-
-            return new \App\Filter($distance, $filterCity, $minDistance, $maxDistance, $maxDistanceFromHome, $home);
+            return new \App\Helper\Distance($geoLocation);
         };
     }
 }

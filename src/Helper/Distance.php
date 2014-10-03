@@ -1,8 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Helper;
 
-use \App\Location;
+use \App\Entity\Location;
 use \AnthonyMartin\GeoLocation\GeoLocation;
 
 /**

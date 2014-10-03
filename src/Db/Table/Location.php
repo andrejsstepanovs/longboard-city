@@ -2,7 +2,7 @@
 
 namespace App\Db\Table;
 
-use App\Location as Entity;
+use App\Entity\Location as Entity;
 
 
 /**
@@ -17,13 +17,16 @@ class Location extends AbstractTable
      */
     public function createTableQuery()
     {
-        return 'CREATE TABLE IF NOT EXISTS "location" (
-            "id" INTEGER PRIMARY KEY NOT NULL,
-            "latitude" REAL NOT NULL,
-            "longitude" REAL NOT NULL,
-            "elevation" REAL NULL,
-            "name" VARCHAR NOT NULL
-        );';
+        return [
+            'CREATE TABLE IF NOT EXISTS "location" (
+                "id" INTEGER PRIMARY KEY NOT NULL,
+                "name" VARCHAR NOT NULL,
+                "elevation" REAL NULL,
+                "latitude" REAL NOT NULL,
+                "longitude" REAL NOT NULL
+            );',
+            'CREATE INDEX IF NOT EXISTS "name" ON "location" ("name");'
+        ];
     }
 
     /**
@@ -42,5 +45,45 @@ class Location extends AbstractTable
         ];
 
         return $this->getDb()->save($data, 'location');
+    }
+
+    /**
+     * @param $id
+     *
+     * @return Entity|bool
+     */
+    public function fetch($id)
+    {
+        $result = $this->getDb()->query('SELECT * FROM location WHERE id = ' . $id);
+
+        return $this->populateEntity($result->fetchArray());
+    }
+
+    public function fetchAll()
+    {
+        $result = $this->getDb()->query('SELECT * FROM `location`');
+
+        $locations = [];
+        while ($row = $result->fetchArray()) {
+            $locations[$row['id']] = $this->populateEntity($row);
+        };
+
+        return $locations;
+    }
+
+    /**
+     * @param array $row
+     *
+     * @return Entity
+     */
+    private function populateEntity(array $row)
+    {
+        return new Entity(
+            $row['latitude'],
+            $row['longitude'],
+            $row['id'],
+            $row['name'],
+            $row['elevation']
+        );
     }
 }

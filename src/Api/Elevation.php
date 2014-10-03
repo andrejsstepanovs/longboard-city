@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Google\Elevation;
+namespace App\Api;
 
-use \App\Location;
+use \App\Entity\Location;
 use \Requests;
 
 
 /**
  * Class Api
  *
- * @package App\Google\Elevation
+ * @package App\Api
  */
-class Api
+class Elevation
 {
     /** @var string */
     private $url;
@@ -95,7 +95,7 @@ class Api
     private function getLocationsRequestParam(array $locations)
     {
         $response = [];
-        /** @var \App\Location $location */
+        /** @var Location $location */
         foreach ($locations as $location) {
             $response[] = $location->getLocation();
         }

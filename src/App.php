@@ -5,9 +5,13 @@ namespace App;
 use App\Gtfs\Stops;
 use App\Gtfs\StopTimes;
 use App\Gtfs\Transfers;
-use App\Helper;
+use App\Helper\Helper;
+use App\Entity\Diff;
 use App\Output\Factory;
 use App\Db\Table\Location as LocationDb;
+use App\Db\Table\Links as LinksDb;
+use App\Entity\Location;
+use App\Helper\Calculation;
 
 /**
  * Class App
@@ -31,17 +35,11 @@ class App
     /** @var Factory */
     private $output;
 
-    /** @var Filter */
-    private $filter;
-
-    /** @var Order */
-    private $order;
-
-    /** @var int */
-    private $limit;
-
     /** @var LocationDb */
     private $locationDb;
+
+    /** @var LinksDb */
+    private $linksDb;
 
     /**
      * @param Stops       $stops
@@ -50,9 +48,8 @@ class App
      * @param Calculation $calculation
      * @param Helper      $helper
      * @param Factory     $output
-     * @param Order       $order
      * @param LocationDb  $locationDb
-     * @param int         $limit
+     * @param LinksDb     $linksDb
      */
     public function __construct(
         Stops $stops,
@@ -61,10 +58,8 @@ class App
         Calculation $calculation,
         Helper $helper,
         Factory $output,
-        Filter $filter,
-        Order $order,
         LocationDb $locationDb,
-        $limit
+        LinksDb $linksDb
     ) {
         $this->stops       = $stops;
         $this->stopTimes   = $stopTimes;
@@ -72,108 +67,67 @@ class App
         $this->helper      = $helper;
         $this->calculation = $calculation;
         $this->output      = $output;
-        $this->filter      = $filter;
-        $this->order       = $order;
-        $this->limit       = $limit;
         $this->locationDb  = $locationDb;
+        $this->linksDb     = $linksDb;
     }
 
-    /**
-     * @return Location[]
-     */
-    private function getLocations()
+    private function saveLocations()
     {
         echo 'Get locations' . PHP_EOL;
         $locations = $this->stops->getLocations();
 
+        echo 'Populate Location Elevation' . PHP_EOL;
+        $locations = $this->helper->populateLocationsElevation($locations);
+
+        echo 'Store locations' . PHP_EOL;
+        $this->helper->saveLocations($locations);
+    }
+
+    private function saveTransferLinks()
+    {
+        $locations = $this->locationDb->fetchAll();
+
         echo 'Populate Linked Location Ids from Transfers' . PHP_EOL;
         $this->transfers->populateLinkedLocationIds($locations);
 
+        echo 'Save Links' . PHP_EOL;
+        $this->helper->saveLinks($locations, 0);
+    }
+
+    private function saveStopLinks()
+    {
+        $locations = $this->locationDb->fetchAll();
         echo 'Populate Linked Location Ids from Stop Times' . PHP_EOL;
         $locations = $this->helper->populateLocationIds($locations);
         $this->stopTimes->populateLinkedLocationIds($locations);
 
-        echo 'Populate Location Elevation' . PHP_EOL;
-        $locations = $this->helper->populateLocationsElevation($locations);
-
-        return $locations;
+        echo 'Save Links' . PHP_EOL;
+        $this->helper->saveLinks($locations, 1);
     }
 
     /**
-     * @param Location[] $locations
-     *
-     * @return Diff[]
-     */
-    private function getDiff(array $locations)
-    {
-        echo 'Populate Location Ids' . PHP_EOL;
-        $locations = $this->helper->populateLocationIds($locations);
-
-        echo 'Filter City' . PHP_EOL;
-        $locations = $this->filter->filterCity($locations);
-
-        echo 'Generate Graph' . PHP_EOL;
-        $graph = $this->helper->getGraph($locations);
-
-        echo 'Calculate Diff Data' . PHP_EOL;
-        $diffData = $this->calculation->getDiffData($locations, $graph);
-
-        return $diffData;
-    }
-
-    /**
-     * @param Diff[]     $diffData
-     * @param Location[] $locations
-     *
-     * @return Diff[]
-     */
-    private function findBestMatch(array $diffData, array $locations)
-    {
-        $locations = $this->helper->populateLocationIds($locations);
-
-        echo 'Filter closest to home' . PHP_EOL;
-        $diffData = $this->filter->filterClosestToHome($diffData, $locations);
-
-        echo 'Order closest to home' . PHP_EOL;
-        $diffData = $this->order->orderClosestToHome($diffData, $locations);
-        $diffData = $this->filter->limitDiff($diffData, $this->limit);
-
-        echo 'Filter by distance' . PHP_EOL;
-        $diffData  = $this->filter->filterDistance($diffData);
-        $diffData = $this->filter->limitDiff($diffData, $this->limit);
-
-        echo 'Order by angle' . PHP_EOL;
-        $diffData = $this->order->orderByAngle($diffData, $locations);
-        $diffData = $this->filter->limitDiff($diffData, $this->limit);
-
-        return $diffData;
-    }
-
-    /**
-     * @param Diff[]     $diffData
-     * @param Location[] $locations
-     * @param string     $type
+     * @param Diff[] $diffData
+     * @param string $type
      *
      * @return string
      */
-    private function getOutput(array $diffData, array $locations, $type)
+    private function getOutput(array $diffData, $type)
     {
         $output = $this->output->getOutput($type);
         $output->setDiffData($diffData);
-        $output->setLocations($locations);
 
         return $output->__toString();
     }
 
     public function getResponse()
     {
-        $locations = $this->getLocations();
+        $this->saveLocations();
+        $this->saveTransferLinks();
+        $this->saveStopLinks();
 
-        $diffData = $this->getDiff($locations);
+        $diffData  = $this->calculation->findTracks();
 
-        $diffData = $this->findBestMatch($diffData, $locations);
-
-        $locations = $this->helper->populateLocationIds($locations);
-        return $this->getOutput($diffData, $locations, Factory::URL_HTML);
+        return $this->getOutput($diffData, Factory::URL_HTML);
     }
+
 }

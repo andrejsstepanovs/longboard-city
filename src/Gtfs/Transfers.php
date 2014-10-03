@@ -3,7 +3,8 @@
 namespace App\Gtfs;
 
 use \Keboola\Csv\CsvFile;
-use \App\Location;
+use \App\Entity\Location;
+
 
 /**
  * Class Transfers
@@ -71,8 +72,8 @@ class Transfers
     }
 
     /**
-     * @param \App\Location $location
-     * @param array         $rows
+     * @param Location $location
+     * @param array    $rows
      */
     public function addLink(Location &$location, array $rows)
     {

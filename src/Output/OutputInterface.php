@@ -2,7 +2,7 @@
 
 namespace App\Output;
 
-use App\Distance;
+use \App\Entity\Diff;
 
 
 /**
@@ -13,18 +13,11 @@ use App\Distance;
 interface OutputInterface
 {
     /**
-     * @param \App\Diff $diffData
+     * @param Diff $diffData
      *
-     * @return \App\Diff
+     * @return Diff
      */
     public function setDiffData(array $diffData);
-
-    /**
-     * @param \App\Location $locations
-     *
-     * @return \App\Diff
-     */
-    public function setLocations(array $locations);
 
     /**
      * @return string

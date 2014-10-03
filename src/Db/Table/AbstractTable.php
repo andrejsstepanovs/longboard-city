@@ -22,8 +22,10 @@ abstract class AbstractTable
         $this->db = $db;
 
         if (method_exists($this, 'createTableQuery')) {
-            $sql = $this->createTableQuery();
-            $this->getDb()->query($sql);
+            $sqlQueries = $this->createTableQuery();
+            foreach ($sqlQueries as $sql) {
+                $this->getDb()->query($sql);
+            }
         }
     }
 
