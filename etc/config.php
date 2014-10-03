@@ -11,14 +11,19 @@ return [
         'path' => __DIR__ . '/../data/gtfs/',
         'city' => null
     ],
+    'db' => [
+        'path' => __DIR__ . '/../data/db/',
+    ],
     'filter' => [
         'home' => [
             'latitude'  => null,
             'longitude' => null
         ],
-        'limit'        => null,
-        'city'         => null,
-        'max-distance' => null,
-        'min-distance' => null,
+        'stops'                  => null,
+        'limit'                  => null,
+        'city'                   => null,
+        'max-distance-from-home' => null,
+        'max-distance'           => null,
+        'min-distance'           => null,
     ],
 ];
