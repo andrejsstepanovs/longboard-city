@@ -10,8 +10,8 @@ use App\Entity\Diff;
 use App\Output\Factory;
 use App\Db\Table\Location as LocationDb;
 use App\Db\Table\Links as LinksDb;
-use App\Entity\Location;
 use App\Helper\Calculation;
+
 
 /**
  * Class App
@@ -36,10 +36,7 @@ class App
     private $output;
 
     /** @var LocationDb */
-    private $locationDb;
-
-    /** @var LinksDb */
-    private $linksDb;
+    private $locationTable;
 
     /**
      * @param Stops       $stops
@@ -48,8 +45,7 @@ class App
      * @param Calculation $calculation
      * @param Helper      $helper
      * @param Factory     $output
-     * @param LocationDb  $locationDb
-     * @param LinksDb     $linksDb
+     * @param LocationDb  $locationTable
      */
     public function __construct(
         Stops $stops,
@@ -58,17 +54,15 @@ class App
         Calculation $calculation,
         Helper $helper,
         Factory $output,
-        LocationDb $locationDb,
-        LinksDb $linksDb
+        LocationDb $locationTable
     ) {
-        $this->stops       = $stops;
-        $this->stopTimes   = $stopTimes;
-        $this->transfers   = $transfers;
-        $this->helper      = $helper;
-        $this->calculation = $calculation;
-        $this->output      = $output;
-        $this->locationDb  = $locationDb;
-        $this->linksDb     = $linksDb;
+        $this->stops         = $stops;
+        $this->stopTimes     = $stopTimes;
+        $this->transfers     = $transfers;
+        $this->helper        = $helper;
+        $this->calculation   = $calculation;
+        $this->output        = $output;
+        $this->locationTable = $locationTable;
     }
 
     private function saveLocations()
@@ -85,7 +79,7 @@ class App
 
     private function saveTransferLinks()
     {
-        $locations = $this->locationDb->fetchAll();
+        $locations = $this->locationTable->fetchAll();
 
         echo 'Populate Linked Location Ids from Transfers' . PHP_EOL;
         $this->transfers->populateLinkedLocationIds($locations);
@@ -96,7 +90,7 @@ class App
 
     private function saveStopLinks()
     {
-        $locations = $this->locationDb->fetchAll();
+        $locations = $this->locationTable->fetchAll();
         echo 'Populate Linked Location Ids from Stop Times' . PHP_EOL;
         $locations = $this->helper->populateLocationIds($locations);
         $this->stopTimes->populateLinkedLocationIds($locations);
