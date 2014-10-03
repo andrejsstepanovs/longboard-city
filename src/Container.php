@@ -34,7 +34,7 @@ class Container extends Pimple
             $locationsInRequest       = $config['locations-in-request'];
             $allowedRequestsPerSecond = $config['allowed-requests-per-second'];
 
-            return new \App\Elevation\Helper($api, $locationsInRequest, $allowedRequestsPerSecond);
+            return new \App\Helper($api, $locationsInRequest, $allowedRequestsPerSecond);
         };
 
         $this['home'] = function ($self) {
@@ -129,7 +129,7 @@ class Container extends Pimple
             /** @var \App\Gtfs\Transfers $stops */
             $transfers = $self['transfers'];
 
-            /** @var \App\Elevation\Helper $helper */
+            /** @var \App\Helper $helper */
             $helper = $self['helper'];
 
             /** @var \App\Calculation $calculation */

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Elevation;
+namespace App;
 
 use \App\Google\Elevation\Api;
 use \App\Location;

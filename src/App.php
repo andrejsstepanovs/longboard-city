@@ -5,7 +5,7 @@ namespace App;
 use App\Gtfs\Stops;
 use App\Gtfs\StopTimes;
 use App\Gtfs\Transfers;
-use App\Elevation\Helper;
+use App\Helper;
 use App\Output\Factory;
 
 /**
