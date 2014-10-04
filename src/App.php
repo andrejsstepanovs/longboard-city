@@ -8,8 +8,6 @@ use App\Gtfs\Transfers;
 use App\Helper\Helper;
 use App\Entity\Diff;
 use App\Output\Factory;
-use App\Db\Table\Location as LocationDb;
-use App\Db\Table\Links as LinksDb;
 use App\Helper\Calculation;
 
 

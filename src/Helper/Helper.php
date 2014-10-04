@@ -116,11 +116,11 @@ class Helper
         $batch = round($count / 10);
         foreach ($locations as $startLocation) {
             $linkedIds = $startLocation->getLinkedLocationIds();
-            $this->saveLinkedIds($linkedIds, $startLocation, $stops);
+            $this->saveLinkedIds($linkedIds, $startLocation, $stops, $locations);
 
             if ($stops > 0) {
                 foreach ($linkedIds as $locationId) {
-                    if (array_key_exists($locationId, $locations)) {
+                    if (!array_key_exists($locationId, $locations)) {
                         continue;
                     }
 
@@ -136,7 +136,7 @@ class Helper
                         }
 
                         $nextStops = $stops + 1;
-                        $this->saveLinkedIds($nextLinkedIds, $startLocation, $nextStops);
+                        $this->saveLinkedIds($nextLinkedIds, $startLocation, $nextStops, $locations);
                     }
                 }
             }
@@ -149,19 +149,25 @@ class Helper
     }
 
     /**
-     * @param array    $linkedIds
-     * @param Location $startLocation
-     * @param int      $stops
+     * @param array      $linkedIds
+     * @param Location   $startLocation
+     * @param int        $stops
+     * @param Location[] $locations
      */
-    private function saveLinkedIds(array $linkedIds, Location $startLocation, $stops)
+    private function saveLinkedIds(array $linkedIds, Location $startLocation, $stops, array $locations)
     {
+        $startLocationClone = clone $startLocation;
         foreach ($linkedIds as $stopId) {
-            $stopLocation = $this->loadLocationWithLinks($stopId);
+            if (!array_key_exists($stopId, $locations)) {
+                continue;
+            }
+
+            $stopLocation = clone $locations[$stopId];
             if (!$stopLocation) {
                 continue;
             }
 
-            $this->saveDiff($startLocation, $stopLocation, $stops);
+            $this->saveDiff($startLocationClone, $stopLocation, $stops);
         }
     }
 
