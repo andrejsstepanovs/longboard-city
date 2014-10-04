@@ -62,12 +62,12 @@ class StopTimes
                 $lastTripId = $tripId;
             }
 
-            $tripData[$row[self::SEQUENCE]] = $row[self::STOP];
+            $tripData[$tripId][$row[self::SEQUENCE]] = $row[self::STOP];
 
             if (!empty($tripData) && !is_null($lastTripId) && $tripId != $lastTripId) {
-                $this->addLinkedLocations($locations, $tripData);
+                $this->addLinkedLocations($locations, $tripData[$lastTripId]);
+                unset($tripData[$lastTripId]);
                 $lastTripId = $tripId;
-                $tripData   = [];
 
                 $tripsProcessed++;
                 if ($tripsProcessed && $tripsProcessed % $batch == 0) {

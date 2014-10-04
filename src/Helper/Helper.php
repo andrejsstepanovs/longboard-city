@@ -56,7 +56,9 @@ class Helper
     {
         $linkedIds = $this->linksTable->fetchLinkedIds($location);
         if (!empty($linkedIds)) {
-            $location->setLinkedLocationIds($linkedIds);
+            foreach ($linkedIds as $locationId) {
+                $location->addLinkedLocation($locationId);
+            }
         }
     }
 
@@ -118,9 +120,21 @@ class Helper
 
             if ($stops > 0) {
                 foreach ($linkedIds as $locationId) {
-                    $linkedLocation = $this->loadLocationWithLinks($locationId);
+                    if (array_key_exists($locationId, $locations)) {
+                        continue;
+                    }
+
+                    /** @var Location $linkedLocation */
+                    $linkedLocation = $locations[$locationId];
+
                     if ($linkedLocation) {
                         $nextLinkedIds = $linkedLocation->getLinkedLocationIds();
+
+                        $key = array_search($startLocation->getId(), $nextLinkedIds);
+                        if ($key !== false) {
+                            unset($nextLinkedIds[$key]);
+                        }
+
                         $nextStops = $stops + 1;
                         $this->saveLinkedIds($nextLinkedIds, $startLocation, $nextStops);
                     }

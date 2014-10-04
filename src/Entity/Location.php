@@ -50,21 +50,10 @@ class Location
      */
     public function addLinkedLocation($locationId)
     {
-        if ($locationId && !in_array($locationId, $this->linkedLocationIds)) {
-            $this->linkedLocationIds[] = $locationId;
+        $locationIdInt = (int)$locationId;
+        if (!empty($locationId) && !in_array($locationIdInt, $this->linkedLocationIds)) {
+            $this->linkedLocationIds[] = $locationIdInt;
         }
-
-        return $this;
-    }
-
-    /**
-     * @param int[] $locationIds
-     *
-     * @return $this
-     */
-    public function setLinkedLocationIds(array $locationIds)
-    {
-        $this->linkedLocationIds = $locationIds;
 
         return $this;
     }
