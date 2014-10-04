@@ -40,7 +40,13 @@ class Transfers
     private function filterValidTransfers()
     {
         $rows = [];
+        $iterator = 0;
         foreach ($this->transfers as $row) {
+            if ($iterator == 0) {
+                $iterator = 1;
+                continue;
+            }
+
             if ($row[self::FROM_ID] == $row[self::TO_ID]) {
                 continue;
             }
@@ -77,16 +83,16 @@ class Transfers
      */
     public function addLink(Location &$location, array $rows)
     {
+        $locationId = $location->getId();
         foreach ($rows as $row) {
-            $id     = $location->getId();
             $fromId = $row[self::FROM_ID];
             $toId   = $row[self::TO_ID];
 
-            if ($id == $fromId) {
+            if ($locationId == $fromId) {
                 $location->addLinkedLocation($toId);
             }
 
-            if ($id == $toId) {
+            if ($locationId == $toId) {
                 $location->addLinkedLocation($fromId);
             }
         }

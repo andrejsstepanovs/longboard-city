@@ -59,25 +59,15 @@ class Helper
         $count = count($locations);
         $batch = round($count / 10);
         foreach ($locations as $startLocation) {
-
             $linkedIds = $startLocation->getLinkedLocationIds();
-            foreach ($linkedIds as $stopId) {
-                if (!array_key_exists($stopId, $locations)) {
-                    continue;
+            $this->saveLinkedIds($linkedIds, $startLocation, $stops);
+
+            if ($stops > 0) {
+                foreach ($linkedIds as $locationId) {
+                    $linkedLocation = $this->locationTable->fetch($locationId);
+                    $linkedIds = $linkedLocation->getLinkedLocationIds();
+                    $this->saveLinkedIds($linkedIds, $startLocation, 1 + $stops);
                 }
-
-                /** @var Location $stopLocation */
-                $stopLocation = $locations[$stopId];
-
-                $distance = $this->distance->getDistance($startLocation, $stopLocation);
-                $diff = new Diff(
-                    $startLocation,
-                    $stopLocation,
-                    $distance,
-                    $stops
-                );
-
-                $this->linksTable->save($diff);
             }
 
             if ($iterator++ && $iterator % $batch == 0) {
@@ -85,6 +75,41 @@ class Helper
                 echo $percent . '%' . PHP_EOL;
             }
         }
+    }
+
+    /**
+     * @param array    $linkedIds
+     * @param Location $startLocation
+     * @param int      $stops
+     */
+    private function saveLinkedIds(array $linkedIds, Location $startLocation, $stops)
+    {
+        foreach ($linkedIds as $stopId) {
+            $stopLocation = $this->locationTable->fetch($stopId);
+            if (!$stopLocation) {
+                continue;
+            }
+
+            $this->saveDiff($startLocation, $stopLocation, $stops);
+        }
+    }
+
+    /**
+     * @param Location $startLocation
+     * @param Location $stopLocation
+     * @param int      $stops
+     */
+    private function saveDiff(Location $startLocation, Location $stopLocation, $stops)
+    {
+        $distance = $this->distance->getDistance($startLocation, $stopLocation);
+        $diff = new Diff(
+            $startLocation,
+            $stopLocation,
+            $distance,
+            $stops
+        );
+
+        $this->linksTable->save($diff);
     }
 
     /**

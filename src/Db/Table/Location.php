@@ -74,10 +74,14 @@ class Location extends AbstractTable
     /**
      * @param array $row
      *
-     * @return Entity
+     * @return Entity|null
      */
     private function populateEntity(array $row)
     {
+        if (empty($row)) {
+            return false;
+        }
+
         return new Entity(
             $row['latitude'],
             $row['longitude'],

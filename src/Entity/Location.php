@@ -44,14 +44,14 @@ class Location
     }
 
     /**
-     * @param int $id
+     * @param int $locationId
      *
      * @return $this
      */
-    public function addLinkedLocation($id)
+    public function addLinkedLocation($locationId)
     {
-        if (!in_array($id, $this->linkedLocationIds)) {
-            $this->linkedLocationIds[] = $id;
+        if (!in_array($locationId, $this->linkedLocationIds)) {
+            $this->linkedLocationIds[] = $locationId;
         }
 
         return $this;

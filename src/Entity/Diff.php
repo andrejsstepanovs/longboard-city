@@ -49,7 +49,7 @@ class Diff
         $this->distance      = $distance;
         $this->stops         = $stops;
         $this->angle         = $angle;
-        $this->elevation     = $elevation;
+        $this->elevation     = $elevation === null ? null : abs($elevation);
 
         $this->setUp();
     }
@@ -101,15 +101,17 @@ class Diff
      */
     private function calculateAngle()
     {
-        $height   = $this->getElevation(); // km
-        $distance = $this->getDistance();  // m
-        $distance *= 1000;                 // km
+        $height   = $this->getElevation(); // m
+        $distance = $this->getDistance();  // km
+        $distance *= 1000;                 // m
 
         if ($distance == 0) {
             return 0;
         }
 
-        return atan($height / $distance) * 180 / pi();
+        $angle = atan($height / $distance) * 180 / pi();
+
+        return $angle;
     }
 
     /**
