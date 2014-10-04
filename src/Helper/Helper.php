@@ -106,30 +106,28 @@ class Helper
     }
 
     /**
-     * @param Location $locations
-     *
-     * @return Location
+     * @param Location[] $locations
      */
-    public function populateLocationsElevation(array $locations)
+    public function saveLocationsElevation(array $locations)
     {
-        $response = [];
-
         /** @var Location[] $chunk */
         $chunks = array_chunk($locations, $this->locationsInRequest);
-
-        $count = count($chunks);
-        $batch = round($count / 10);
-        $batch = $batch > 1 ? $batch : 2;
-        $sleep = round(abs($this->allowedRequestsPerSecond / $count - 1), 1);
+        $count  = count($chunks);
+        $batch  = round($count / 10);
+        $batch  = $batch > 1 ? $batch : 2;
+        $sleep  = round(abs($this->allowedRequestsPerSecond / $count - 1), 1);
 
         foreach ($chunks as $iterator => $chunk) {
             $data = $this->api->getLocationsElevationData($chunk);
+            if (count($data) != count($chunk)) {
+                throw new \RuntimeException('Something went wrong.');
+            }
 
             foreach ($chunk as $id => $location) {
                 $responseData = $data[$id];
                 $location->setElevation($responseData['elevation']);
 
-                $response[] = $location;
+                $this->locationTable->save($location);
             }
 
             if ($iterator && $iterator % $batch == 0) {
@@ -139,8 +137,6 @@ class Helper
 
             sleep($sleep);
         }
-
-        return $response;
     }
 
     /**

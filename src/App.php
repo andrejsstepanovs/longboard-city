@@ -70,11 +70,8 @@ class App
         echo 'Get locations' . PHP_EOL;
         $locations = $this->stops->getLocations();
 
-        echo 'Populate Location Elevation' . PHP_EOL;
-        $locations = $this->helper->populateLocationsElevation($locations);
-
-        echo 'Store locations' . PHP_EOL;
-        $this->helper->saveLocations($locations);
+        echo 'Populate and Save Location Elevation' . PHP_EOL;
+        $this->helper->saveLocationsElevation($locations);
     }
 
     private function saveTransferLinks()
