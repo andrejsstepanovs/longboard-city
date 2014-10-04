@@ -50,7 +50,7 @@ class Location
      */
     public function addLinkedLocation($locationId)
     {
-        if (!in_array($locationId, $this->linkedLocationIds)) {
+        if ($locationId && !in_array($locationId, $this->linkedLocationIds)) {
             $this->linkedLocationIds[] = $locationId;
         }
 

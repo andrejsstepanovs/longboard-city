@@ -30,9 +30,6 @@ class StopTimes
     /** @var CsvFile */
     private $stopTimes;
 
-    /** @var int */
-    private $lastTripId;
-
     /**
      * @param CsvFile $stopTimes
      */
@@ -46,36 +43,40 @@ class StopTimes
      */
     public function populateLinkedLocationIds(array &$locations)
     {
-        $count    = $this->getTripCount();
-        $batch    = round($count / 10);
-        $tripData = [];
+        $count          = $this->getTripCount();
+        $batch          = round($count / 10);
+        $tripData       = [];
         $tripsProcessed = 0;
+        $iterator       = 0;
+        $lastTripId     = null;
 
-        foreach ($this->stopTimes as $iterator => $row) {
+        foreach ($this->stopTimes as $row) {
             if ($iterator == 0) {
+                $iterator = 1;
                 continue;
             }
 
             $tripId = $row[self::TRIP];
+            if ($iterator == 1) {
+                $iterator = 2;
+                $lastTripId = $tripId;
+            }
 
-            if ($tripId != $this->lastTripId && $this->lastTripId !== null) {
-                $this->lastTripId = $tripId;
+            $tripData[$row[self::SEQUENCE]] = $row[self::STOP];
 
+            if (!empty($tripData) && !is_null($lastTripId) && $tripId != $lastTripId) {
                 $this->addLinkedLocations($locations, $tripData);
+                $lastTripId = $tripId;
+                $tripData   = [];
 
-                $tripData = [];
-
+                $tripsProcessed++;
                 if ($tripsProcessed && $tripsProcessed % $batch == 0) {
                     $percent = round($tripsProcessed / $count, 2) * 100;
                     echo $percent . '%' . PHP_EOL;
                 }
-                $tripsProcessed++;
 
                 continue;
             }
-
-            $this->lastTripId = $tripId;
-            $tripData[$row[self::SEQUENCE]] = $row[self::STOP];
         }
     }
 
@@ -86,13 +87,13 @@ class StopTimes
     public function addLinkedLocations(array &$locations, array $tripData)
     {
         $parentStopId = null;
-        foreach ($tripData as $stopId) {
-            if ($parentStopId == null) {
-                $parentStopId = $stopId;
-                continue;
-            }
+        foreach ($tripData as $sequence => $stopId) {
+            $parent = array_key_exists($sequence - 1, $tripData) ? $tripData[$sequence - 1] : null;
+            $next   = array_key_exists($sequence + 1, $tripData) ? $tripData[$sequence + 1] : null;
 
-            $locations[$stopId]->addLinkedLocation($parentStopId);
+            $location = $locations[$stopId];
+            $location->addLinkedLocation($parent);
+            $location->addLinkedLocation($next);
         }
     }
 
