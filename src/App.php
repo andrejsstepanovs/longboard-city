@@ -70,7 +70,7 @@ class App
 
     private function saveTransferLinks()
     {
-        echo 'Load Locations With Links from DB';
+        echo 'Load Locations With Links from DB' . PHP_EOL;
         $locations = $this->helper->loadLocationsWithLinks();
 
         echo 'Populate Linked Location Ids from Transfers' . PHP_EOL;
@@ -82,7 +82,7 @@ class App
 
     private function saveStopLinks()
     {
-        echo 'Load Locations With Links from DB';
+        echo 'Load Locations With Links from DB' . PHP_EOL;
         $locations = $this->helper->loadLocationsWithLinks();
 
         echo 'Populate Linked Location Ids from Stop Times' . PHP_EOL;

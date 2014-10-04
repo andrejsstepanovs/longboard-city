@@ -17,6 +17,7 @@ class Url extends OutputAbstract implements OutputInterface
     const KEY_ANGLE     = 'angle';
     const KEY_NAME      = 'name';
     const KEY_URL       = 'url';
+    const KEY_STOPS     = 'stops';
 
     /** @var string */
     private $url = "https://www.google.de/maps/dir/'%s,%s'/'%s,%s'";
@@ -57,7 +58,8 @@ class Url extends OutputAbstract implements OutputInterface
             self::KEY_ELEVATION => $diffData->getElevation(),
             self::KEY_ANGLE     => $this->getAngle($diffData),
             self::KEY_NAME      => $diffData->getName(),
-            self::KEY_URL       => $this->getUrl($diffData)
+            self::KEY_URL       => $this->getUrl($diffData),
+            self::KEY_STOPS     => $diffData->getStops()
         ];
     }
 

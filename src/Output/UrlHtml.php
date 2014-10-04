@@ -28,7 +28,7 @@ class UrlHtml extends Url
         $data = $this->getOutputData($diffData);
 
         $name = [];
-        $name[] = '(' . $data[self::KEY_ELEVATION] . ')';
+        $name[] = '(' . $data[self::KEY_STOPS] . ' stop)';
         $name[] = '(' . $data[self::KEY_ANGLE] . ')';
         $name[] = $data[self::KEY_NAME];
         $name[] = '(' . $data[self::KEY_DISTANCE] . ')';

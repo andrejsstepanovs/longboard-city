@@ -133,6 +133,9 @@ class Calculation
         if (!empty($this->maxDistance)) {
             $where[] = 'distance <= ' . $this->maxDistance;
         }
+        if (!empty($this->stops)) {
+            $where[] = 'stops <= ' . $this->stops;
+        }
 
         $query = implode(' ', $sql);
         return sprintf($query, implode(' AND ', $where));
