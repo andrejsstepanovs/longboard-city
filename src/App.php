@@ -35,9 +35,6 @@ class App
     /** @var Factory */
     private $output;
 
-    /** @var LocationDb */
-    private $locationTable;
-
     /**
      * @param Stops       $stops
      * @param StopTimes   $stopTimes
@@ -45,7 +42,6 @@ class App
      * @param Calculation $calculation
      * @param Helper      $helper
      * @param Factory     $output
-     * @param LocationDb  $locationTable
      */
     public function __construct(
         Stops $stops,
@@ -53,8 +49,7 @@ class App
         Transfers $transfers,
         Calculation $calculation,
         Helper $helper,
-        Factory $output,
-        LocationDb $locationTable
+        Factory $output
     ) {
         $this->stops         = $stops;
         $this->stopTimes     = $stopTimes;
@@ -62,7 +57,6 @@ class App
         $this->helper        = $helper;
         $this->calculation   = $calculation;
         $this->output        = $output;
-        $this->locationTable = $locationTable;
     }
 
     private function saveLocations()
@@ -76,7 +70,8 @@ class App
 
     private function saveTransferLinks()
     {
-        $locations = $this->locationTable->fetchAll();
+        echo 'Load Locations With Links from DB';
+        $locations = $this->helper->loadLocationsWithLinks();
 
         echo 'Populate Linked Location Ids from Transfers' . PHP_EOL;
         $this->transfers->populateLinkedLocationIds($locations);
@@ -87,7 +82,9 @@ class App
 
     private function saveStopLinks()
     {
-        $locations = $this->locationTable->fetchAll();
+        echo 'Load Locations With Links from DB';
+        $locations = $this->helper->loadLocationsWithLinks();
+
         echo 'Populate Linked Location Ids from Stop Times' . PHP_EOL;
         $locations = $this->helper->populateLocationIds($locations);
         $this->stopTimes->populateLinkedLocationIds($locations);

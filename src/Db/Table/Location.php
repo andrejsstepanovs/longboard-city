@@ -54,9 +54,10 @@ class Location extends AbstractTable
      */
     public function fetch($id)
     {
-        $result = $this->getDb()->query('SELECT * FROM location WHERE id = ' . $id);
+        $sql = 'SELECT * FROM `location` WHERE id = ' . $id;
+        $result = $this->getDb()->query($sql);
 
-        return $this->populateEntity($result->fetchArray());
+        return $this->populateEntity($result->fetchArray(SQLITE3_ASSOC));
     }
 
     public function fetchAll()
@@ -64,7 +65,7 @@ class Location extends AbstractTable
         $result = $this->getDb()->query('SELECT * FROM `location`');
 
         $locations = [];
-        while ($row = $result->fetchArray()) {
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
             $locations[$row['id']] = $this->populateEntity($row);
         };
 

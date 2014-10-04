@@ -62,17 +62,13 @@ class Container extends Pimple
             /** @var \App\Output\Factory $output */
             $output = $self['output'];
 
-            /** @var \App\Db\Table\Location $locationTable */
-            $locationTable = $self['db-location'];
-
             return new \App\App(
                 $stops,
                 $stopTimes,
                 $transfers,
                 $calculation,
                 $helper,
-                $output,
-                $locationTable
+                $output
             );
         };
     }

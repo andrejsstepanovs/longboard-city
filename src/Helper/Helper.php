@@ -50,6 +50,60 @@ class Helper
     }
 
     /**
+     * @param Location &$location
+     */
+    private function populateLocationLinks(Location &$location)
+    {
+        $linkedIds = $this->linksTable->fetchLinkedIds($location);
+        if (!empty($linkedIds)) {
+            $location->setLinkedLocationIds($linkedIds);
+        }
+    }
+
+    /**
+     * @return Location[]
+     */
+    public function loadLocationsWithLinks()
+    {
+        $locations = $this->locationTable->fetchAll();
+
+        $iterator = 0;
+        $count = count($locations);
+        $batch = round($count / 10);
+
+        /** @var Location $location */
+        foreach ($locations as $location) {
+            $this->populateLocationLinks($location);
+
+            if ($iterator++ && $iterator % $batch == 0) {
+                $percent = round($iterator / $count, 2) * 100;
+                echo $percent . '%' . PHP_EOL;
+            }
+        }
+
+        return $locations;
+    }
+
+    /**
+     * @param int $locationId
+     *
+     * @return Location|bool
+     */
+    public function loadLocationWithLinks($locationId)
+    {
+        if (empty($locationId)) {
+            return false;
+        }
+
+        $location = $this->locationTable->fetch($locationId);
+        if ($location) {
+            $this->populateLocationLinks($location);
+        }
+
+        return $location;
+    }
+
+    /**
      * @param Location[] $locations
      * @param int        $stops
      */
@@ -64,9 +118,12 @@ class Helper
 
             if ($stops > 0) {
                 foreach ($linkedIds as $locationId) {
-                    $linkedLocation = $this->locationTable->fetch($locationId);
-                    $linkedIds = $linkedLocation->getLinkedLocationIds();
-                    $this->saveLinkedIds($linkedIds, $startLocation, 1 + $stops);
+                    $linkedLocation = $this->loadLocationWithLinks($locationId);
+                    if ($linkedLocation) {
+                        $nextLinkedIds = $linkedLocation->getLinkedLocationIds();
+                        $nextStops = $stops + 1;
+                        $this->saveLinkedIds($nextLinkedIds, $startLocation, $nextStops);
+                    }
                 }
             }
 
@@ -85,7 +142,7 @@ class Helper
     private function saveLinkedIds(array $linkedIds, Location $startLocation, $stops)
     {
         foreach ($linkedIds as $stopId) {
-            $stopLocation = $this->locationTable->fetch($stopId);
+            $stopLocation = $this->loadLocationWithLinks($stopId);
             if (!$stopLocation) {
                 continue;
             }

@@ -3,6 +3,7 @@
 namespace App\Db\Table;
 
 use App\Entity\Diff as Entity;
+use App\Entity\Location as LocationEntity;
 
 
 /**
@@ -57,6 +58,30 @@ class Links extends AbstractTable
         ];
 
         return $this->getDb()->save($data, 'links');
+    }
+
+    /**
+     * @param LocationEntity $location
+     *
+     * @return int[]
+     */
+    public function fetchLinkedIds(LocationEntity $location)
+    {
+        $locationId = $location->getId();
+        $sql = 'SELECT * FROM `links` WHERE start = %s OR stop = %s;';
+        $result = $this->getDb()->query(sprintf($sql, $locationId, $locationId));
+
+        $links = [];
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $links[$row['start']] = null;
+            $links[$row['stop']]  = null;
+        };
+
+        if (array_key_exists($locationId, $links)) {
+            unset($links[$locationId]);
+        }
+
+        return !empty($links) ? array_keys($links) : [];
     }
 
     /**

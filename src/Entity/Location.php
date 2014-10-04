@@ -58,6 +58,18 @@ class Location
     }
 
     /**
+     * @param int[] $locationIds
+     *
+     * @return $this
+     */
+    public function setLinkedLocationIds(array $locationIds)
+    {
+        $this->linkedLocationIds = $locationIds;
+
+        return $this;
+    }
+
+    /**
      * @return \int[]
      */
     public function getLinkedLocationIds()
